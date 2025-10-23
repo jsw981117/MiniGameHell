@@ -52,11 +52,14 @@ function resizeCanvas() {
   const containerPaddingTop = containerStyle ? parseInt(containerStyle.paddingTop) : 20;
   const containerPaddingBottom = containerStyle ? parseInt(containerStyle.paddingBottom) : 20;
 
+  // 체력바 공간 (높이 30px + 여유 20px)
+  const healthBarSpace = 50;
+
   // 캔버스와 다른 요소 사이의 마진 (여유 공간)
   const margins = 40;
 
   // 사용할 수 없는 공간 총합
-  const reservedSpace = topUIHeight + controlsHeight + containerPaddingTop + containerPaddingBottom + margins;
+  const reservedSpace = topUIHeight + controlsHeight + containerPaddingTop + containerPaddingBottom + margins + healthBarSpace;
 
   // 사용 가능한 공간 계산
   const availableWidth = windowWidth * 0.95;
@@ -282,6 +285,9 @@ function render() {
   ctx.fillStyle = '#1a1a2e';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  // 체력바 렌더링 (박스 위, scale 적용 전)
+  renderTowerHealthBar();
+
   // 스케일 적용
   ctx.save();
   ctx.scale(scale, scale);
@@ -299,6 +305,68 @@ function render() {
   player.render(ctx);
 
   ctx.restore();
+}
+
+/**
+ * 타워 체력바 렌더링 (박스 밖 위쪽)
+ */
+function renderTowerHealthBar() {
+  // 체력바 크기 (박스 너비의 90%)
+  const barWidth = canvas.width * 0.9;
+  const barHeight = 30;
+  const barX = (canvas.width - barWidth) / 2;
+  const barY = 10; // 캔버스 상단에서 10px 아래
+
+  // 배경 (어두운 회색)
+  ctx.fillStyle = '#333333';
+  ctx.fillRect(barX, barY, barWidth, barHeight);
+
+  // 체력 비율
+  const hpRatio = tower.hp / tower.maxHp;
+
+  // 체력에 따른 색상 (초록 → 노랑 → 빨강)
+  let barColor;
+  if (hpRatio > 0.6) {
+    barColor = '#00ff00'; // 초록
+  } else if (hpRatio > 0.3) {
+    barColor = '#ffff00'; // 노랑
+  } else {
+    barColor = '#ff0000'; // 빨강
+  }
+
+  // 현재 체력
+  ctx.fillStyle = barColor;
+  ctx.fillRect(barX, barY, barWidth * hpRatio, barHeight);
+
+  // 테두리
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(barX, barY, barWidth, barHeight);
+
+  // 체력 텍스트
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 18px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(
+    `Tower HP: ${Math.ceil(tower.hp)} / ${tower.maxHp}`,
+    canvas.width / 2,
+    barY + barHeight / 2
+  );
+
+  // 텍스트 그림자 효과
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 3;
+  ctx.strokeText(
+    `Tower HP: ${Math.ceil(tower.hp)} / ${tower.maxHp}`,
+    canvas.width / 2,
+    barY + barHeight / 2
+  );
+  ctx.fillText(
+    `Tower HP: ${Math.ceil(tower.hp)} / ${tower.maxHp}`,
+    canvas.width / 2,
+    barY + barHeight / 2
+  );
 }
 
 /**

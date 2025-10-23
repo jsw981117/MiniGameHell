@@ -124,9 +124,6 @@ class Tower {
       16,
       20
     );
-
-    // 체력바 렌더링
-    this.renderHealthBar(ctx);
   }
 
   /**
