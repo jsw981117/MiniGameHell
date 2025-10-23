@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Star Dodge - Mini Game Hell</title>
+    <title>Tower Defense Runner - Mini Game Hell</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -31,6 +31,54 @@
     <div id="settingsModal" class="modal">
         <div class="modal-content">
             <h2>게임 설정</h2>
+
+            <div class="settings-section">
+                <h3>타워 설정</h3>
+                <div class="setting-item">
+                    <label for="towerWidth">너비 (px):</label>
+                    <input type="number" id="towerWidth" min="40" max="120" step="5">
+                </div>
+                <div class="setting-item">
+                    <label for="towerHeight">높이 (px):</label>
+                    <input type="number" id="towerHeight" min="40" max="120" step="5">
+                </div>
+                <div class="setting-item">
+                    <label for="towerInitialHp">초기 체력:</label>
+                    <input type="number" id="towerInitialHp" min="50" max="500" step="10">
+                </div>
+                <div class="setting-item">
+                    <label for="towerMaxHp">최대 체력:</label>
+                    <input type="number" id="towerMaxHp" min="50" max="500" step="10">
+                </div>
+                <div class="setting-item">
+                    <label for="towerHpDecayRate">체력 감소율 (HP/s):</label>
+                    <input type="number" id="towerHpDecayRate" min="0" max="5" step="0.1">
+                </div>
+                <div class="setting-item">
+                    <label for="towerEnemyDamage">적 공격 데미지:</label>
+                    <input type="number" id="towerEnemyDamage" min="1" max="50" step="1">
+                </div>
+                <div class="setting-item">
+                    <label for="towerShootInterval">사격 주기 (초):</label>
+                    <input type="number" id="towerShootInterval" min="0.1" max="3" step="0.1">
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>투사체 설정</h3>
+                <div class="setting-item">
+                    <label for="projectileWidth">너비 (px):</label>
+                    <input type="number" id="projectileWidth" min="5" max="30" step="1">
+                </div>
+                <div class="setting-item">
+                    <label for="projectileHeight">높이 (px):</label>
+                    <input type="number" id="projectileHeight" min="5" max="30" step="1">
+                </div>
+                <div class="setting-item">
+                    <label for="projectileSpeed">속도 (px/s):</label>
+                    <input type="number" id="projectileSpeed" min="200" max="1000" step="50">
+                </div>
+            </div>
 
             <div class="settings-section">
                 <h3>플레이어 설정</h3>
@@ -66,37 +114,57 @@
                     <label for="starSize">크기 (px):</label>
                     <input type="number" id="starSize" min="15" max="60" step="5">
                 </div>
+                <div class="setting-item">
+                    <label for="starHealAmount">타워 회복량:</label>
+                    <input type="number" id="starHealAmount" min="1" max="50" step="1">
+                </div>
             </div>
 
             <div class="settings-section">
-                <h3>메테오 설정</h3>
+                <h3>적 설정</h3>
                 <div class="setting-item">
-                    <label for="meteorWidth">너비 (px):</label>
-                    <input type="number" id="meteorWidth" min="20" max="100" step="5">
+                    <label for="enemyWidth">너비 (px):</label>
+                    <input type="number" id="enemyWidth" min="20" max="100" step="5">
                 </div>
                 <div class="setting-item">
-                    <label for="meteorHeight">높이 (px):</label>
-                    <input type="number" id="meteorHeight" min="20" max="100" step="5">
+                    <label for="enemyHeight">높이 (px):</label>
+                    <input type="number" id="enemyHeight" min="20" max="100" step="5">
                 </div>
                 <div class="setting-item">
-                    <label for="meteorMinSpeed">최소 속도 (px/s):</label>
-                    <input type="number" id="meteorMinSpeed" min="50" max="500" step="50">
+                    <label for="enemyHp">체력:</label>
+                    <input type="number" id="enemyHp" min="1" max="10" step="1">
                 </div>
                 <div class="setting-item">
-                    <label for="meteorMaxSpeed">최대 속도 (px/s):</label>
-                    <input type="number" id="meteorMaxSpeed" min="200" max="1000" step="50">
+                    <label for="enemyMinSpeed">최소 낙하 속도 (px/s):</label>
+                    <input type="number" id="enemyMinSpeed" min="50" max="500" step="50">
                 </div>
                 <div class="setting-item">
-                    <label for="meteorInitialInterval">초기 생성 주기 (초):</label>
-                    <input type="number" id="meteorInitialInterval" min="0.5" max="5" step="0.1">
+                    <label for="enemyMaxSpeed">최대 낙하 속도 (px/s):</label>
+                    <input type="number" id="enemyMaxSpeed" min="200" max="1000" step="50">
                 </div>
                 <div class="setting-item">
-                    <label for="meteorMinInterval">최소 생성 주기 (초):</label>
-                    <input type="number" id="meteorMinInterval" min="0.1" max="2" step="0.1">
+                    <label for="enemyGroundSpeedMult">지상 이동 속도 배율:</label>
+                    <input type="number" id="enemyGroundSpeedMult" min="0.1" max="1.5" step="0.05">
                 </div>
                 <div class="setting-item">
-                    <label for="meteorDecreaseRate">난이도 증가율:</label>
-                    <input type="number" id="meteorDecreaseRate" min="0.9" max="1.0" step="0.01">
+                    <label for="enemyInitialInterval">초기 생성 주기 (초):</label>
+                    <input type="number" id="enemyInitialInterval" min="0.5" max="5" step="0.1">
+                </div>
+                <div class="setting-item">
+                    <label for="enemyMinInterval">최소 생성 주기 (초):</label>
+                    <input type="number" id="enemyMinInterval" min="0.1" max="2" step="0.1">
+                </div>
+                <div class="setting-item">
+                    <label for="enemyDecreaseRate">난이도 증가율:</label>
+                    <input type="number" id="enemyDecreaseRate" min="0.9" max="1.0" step="0.01">
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>회복 설정</h3>
+                <div class="setting-item">
+                    <label for="healEnemyKill">적 처치 시 회복량:</label>
+                    <input type="number" id="healEnemyKill" min="1" max="50" step="1">
                 </div>
             </div>
 
@@ -111,9 +179,11 @@
     <!-- JavaScript 파일들 -->
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
+    <script src="js/Tower.js"></script>
+    <script src="js/Projectile.js"></script>
     <script src="js/Player.js"></script>
     <script src="js/Star.js"></script>
-    <script src="js/Meteor.js"></script>
+    <script src="js/Enemy.js"></script>
     <script src="js/game.js"></script>
     <script src="js/settings.js"></script>
 </body>

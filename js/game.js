@@ -12,9 +12,11 @@ let gameBox = {
 let scale = 1;
 
 // 게임 오브젝트
+let tower = null;
+let projectilePool = null;
 let player = null;
 let star = null;
-let meteorPool = null;
+let enemyPool = null;
 
 // 게임 상태
 let gameState = {
@@ -22,8 +24,8 @@ let gameState = {
   score: 0,
   time: 0,
   lastTime: 0,
-  meteorTimer: 0,
-  meteorInterval: RUNTIME_CONFIG.meteor.spawnInterval.initial
+  enemyTimer: 0,
+  enemyInterval: RUNTIME_CONFIG.enemy.spawnInterval.initial
 };
 
 // 입력 상태
@@ -85,6 +87,14 @@ function initGame() {
   resizeCanvas();
 
   // 게임 오브젝트 생성
+  tower = new Tower(gameBox.width, gameBox.height);
+
+  projectilePool = new ProjectilePool(
+    CONFIG.PROJECTILE.POOL_SIZE,
+    gameBox.width,
+    gameBox.height
+  );
+
   player = new Player(
     (gameBox.width - CONFIG.PLAYER.WIDTH) / 2,
     gameBox.height - CONFIG.PLAYER.HEIGHT - 10,
@@ -93,14 +103,19 @@ function initGame() {
   );
 
   star = new Star(gameBox.width, gameBox.height);
-  meteorPool = new MeteorPool(CONFIG.METEOR.POOL_SIZE, gameBox.width, gameBox.height);
+
+  enemyPool = new EnemyPool(
+    CONFIG.ENEMY.POOL_SIZE,
+    gameBox.width,
+    gameBox.height
+  );
 
   // 게임 상태 초기화
   gameState.current = CONFIG.STATE.READY;
   gameState.score = 0;
   gameState.time = 0;
-  gameState.meteorTimer = 0;
-  gameState.meteorInterval = RUNTIME_CONFIG.meteor.spawnInterval.initial;
+  gameState.enemyTimer = 0;
+  gameState.enemyInterval = RUNTIME_CONFIG.enemy.spawnInterval.initial;
 
   updateScore();
   renderReadyScreen();
@@ -112,17 +127,19 @@ function initGame() {
 function startGame() {
   if (gameState.current === CONFIG.STATE.READY || gameState.current === CONFIG.STATE.GAMEOVER) {
     // 오브젝트 리셋
+    tower.reset();
+    projectilePool.reset();
     player.reset();
     star.spawn();
-    meteorPool.reset();
+    enemyPool.reset();
 
     // 상태 초기화
     gameState.current = CONFIG.STATE.PLAYING;
     gameState.score = 0;
     gameState.time = 0;
     gameState.lastTime = performance.now();
-    gameState.meteorTimer = 0;
-    gameState.meteorInterval = RUNTIME_CONFIG.meteor.spawnInterval.initial;
+    gameState.enemyTimer = 0;
+    gameState.enemyInterval = RUNTIME_CONFIG.enemy.spawnInterval.initial;
 
     updateScore();
     gameLoop();
@@ -168,25 +185,41 @@ function updateScore() {
  * 게임 업데이트
  */
 function update(deltaTime) {
+  // 활성 적 목록 가져오기
+  const activeEnemies = enemyPool.getActive();
+  const hasEnemies = activeEnemies.length > 0;
+
+  // 타워 업데이트 (적이 있을 때 발사 여부 반환)
+  const shouldShoot = tower.update(deltaTime, hasEnemies);
+  if (shouldShoot && hasEnemies) {
+    // 투사체 발사 (타워 중앙 상단에서)
+    const towerCenterX = tower.x + tower.width / 2;
+    const towerTopY = tower.y;
+    projectilePool.spawn(towerCenterX, towerTopY, activeEnemies);
+  }
+
+  // 투사체 업데이트
+  projectilePool.update(deltaTime);
+
   // 플레이어 업데이트
   player.update(deltaTime);
 
   // 별 업데이트
   star.update(deltaTime);
 
-  // 메테오 업데이트
-  meteorPool.update(deltaTime);
+  // 적 업데이트 (타워 정보 필요)
+  enemyPool.update(deltaTime, tower);
 
-  // 메테오 생성 타이머
-  gameState.meteorTimer += deltaTime;
-  if (gameState.meteorTimer >= gameState.meteorInterval) {
-    meteorPool.spawn();
-    gameState.meteorTimer = 0;
+  // 적 생성 타이머
+  gameState.enemyTimer += deltaTime;
+  if (gameState.enemyTimer >= gameState.enemyInterval) {
+    enemyPool.spawn();
+    gameState.enemyTimer = 0;
 
     // 난이도 증가 (생성 주기 감소)
-    gameState.meteorInterval = Math.max(
-      gameState.meteorInterval * RUNTIME_CONFIG.meteor.spawnInterval.decreaseRate,
-      RUNTIME_CONFIG.meteor.spawnInterval.minimum
+    gameState.enemyInterval = Math.max(
+      gameState.enemyInterval * RUNTIME_CONFIG.enemy.spawnInterval.decreaseRate,
+      RUNTIME_CONFIG.enemy.spawnInterval.minimum
     );
   }
 
@@ -194,16 +227,47 @@ function update(deltaTime) {
   if (checkCollision(player, star)) {
     gameState.score++;
     updateScore();
+    tower.heal(RUNTIME_CONFIG.star.healAmount);
     star.spawn();
   }
 
-  // 충돌 감지: 플레이어 ↔ 메테오
-  const activeMeteors = meteorPool.getActive();
-  for (let i = 0; i < activeMeteors.length; i++) {
-    if (checkCollision(player, activeMeteors[i])) {
-      gameOver();
-      return;
+  // 충돌 감지: 플레이어 ↔ 적
+  for (let i = 0; i < activeEnemies.length; i++) {
+    const enemy = activeEnemies[i];
+    if (checkCollision(player, enemy)) {
+      enemy.deactivate();
+      tower.heal(RUNTIME_CONFIG.heal.enemyKill);
     }
+  }
+
+  // 충돌 감지: 투사체 ↔ 적
+  const activeProjectiles = projectilePool.getActive();
+  for (let i = 0; i < activeProjectiles.length; i++) {
+    const projectile = activeProjectiles[i];
+    for (let j = 0; j < activeEnemies.length; j++) {
+      const enemy = activeEnemies[j];
+      if (checkCollision(projectile, enemy)) {
+        projectile.deactivate();
+        enemy.deactivate();
+        tower.heal(RUNTIME_CONFIG.heal.enemyKill);
+        break; // 투사체는 하나의 적만 명중
+      }
+    }
+  }
+
+  // 충돌 감지: 적 ↔ 타워
+  for (let i = 0; i < activeEnemies.length; i++) {
+    const enemy = activeEnemies[i];
+    if (checkCollision(enemy, tower)) {
+      enemy.deactivate();
+      tower.takeDamage();
+    }
+  }
+
+  // 타워 체력 체크 (게임 오버)
+  if (!tower.isAlive()) {
+    gameOver();
+    return;
   }
 
   // 게임 시간 증가
@@ -227,9 +291,11 @@ function render() {
   ctx.lineWidth = 2;
   ctx.strokeRect(0, 0, gameBox.width, gameBox.height);
 
-  // 게임 오브젝트 렌더링
+  // 게임 오브젝트 렌더링 (뒤에서 앞으로)
   star.render(ctx);
-  meteorPool.render(ctx);
+  enemyPool.render(ctx);
+  projectilePool.render(ctx);
+  tower.render(ctx);
   player.render(ctx);
 
   ctx.restore();
@@ -246,9 +312,9 @@ function renderReadyScreen() {
   ctx.scale(scale, scale);
 
   ctx.fillStyle = '#ffd700';
-  ctx.font = 'bold 40px Arial';
+  ctx.font = 'bold 36px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText('Star Dodge', gameBox.width / 2, gameBox.height / 2 - 60);
+  ctx.fillText('Tower Defense Runner', gameBox.width / 2, gameBox.height / 2 - 60);
 
   ctx.fillStyle = '#ffffff';
   ctx.font = '22px Arial';
