@@ -2,24 +2,91 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Game Hell</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Star Dodge - Mini Game Hell</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="game-container">
-        <h1>Mini Game Hell</h1>
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <div class="controls">
-            <button id="startBtn">게임 시작</button>
-            <button id="pauseBtn">일시정지</button>
-            <button id="resetBtn">재시작</button>
+        <!-- 상단 UI -->
+        <div class="top-ui">
+            <div class="score">
+                점수: <span id="scoreValue">0</span>
+            </div>
+            <button id="settingsBtn" class="settings-btn" title="설정">⚙️</button>
         </div>
-        <div class="score">
-            <p>점수: <span id="scoreValue">0</span></p>
+
+        <!-- 게임 캔버스 -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- 컨트롤 버튼 -->
+        <div class="controls">
+            <button id="startBtn" class="btn btn-start">게임 시작</button>
+            <button id="pauseBtn" class="btn btn-pause">일시정지</button>
+            <button id="resetBtn" class="btn btn-reset">재시작</button>
         </div>
     </div>
 
+    <!-- 설정 모달 -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h2>게임 설정</h2>
+
+            <div class="settings-section">
+                <h3>플레이어 설정</h3>
+                <div class="setting-item">
+                    <label for="playerSpeed">이동 속도 (px/s):</label>
+                    <input type="number" id="playerSpeed" min="100" max="1000" step="50">
+                </div>
+                <div class="setting-item">
+                    <label for="playerJumpForce">점프력 (px):</label>
+                    <input type="number" id="playerJumpForce" min="200" max="1000" step="50">
+                </div>
+                <div class="setting-item">
+                    <label for="playerGravity">중력:</label>
+                    <input type="number" id="playerGravity" min="500" max="3000" step="100">
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>메테오 설정</h3>
+                <div class="setting-item">
+                    <label for="meteorMinSpeed">최소 속도 (px/s):</label>
+                    <input type="number" id="meteorMinSpeed" min="50" max="500" step="50">
+                </div>
+                <div class="setting-item">
+                    <label for="meteorMaxSpeed">최대 속도 (px/s):</label>
+                    <input type="number" id="meteorMaxSpeed" min="200" max="1000" step="50">
+                </div>
+                <div class="setting-item">
+                    <label for="meteorInitialInterval">초기 생성 주기 (초):</label>
+                    <input type="number" id="meteorInitialInterval" min="0.5" max="5" step="0.1">
+                </div>
+                <div class="setting-item">
+                    <label for="meteorMinInterval">최소 생성 주기 (초):</label>
+                    <input type="number" id="meteorMinInterval" min="0.1" max="2" step="0.1">
+                </div>
+                <div class="setting-item">
+                    <label for="meteorDecreaseRate">난이도 증가율:</label>
+                    <input type="number" id="meteorDecreaseRate" min="0.9" max="1.0" step="0.01">
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button id="applySettings" class="btn btn-apply">적용</button>
+                <button id="cancelSettings" class="btn btn-cancel">취소</button>
+                <button id="resetSettings" class="btn btn-default">기본값 복원</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 파일들 -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/Player.js"></script>
+    <script src="js/Star.js"></script>
+    <script src="js/Meteor.js"></script>
     <script src="js/game.js"></script>
+    <script src="js/settings.js"></script>
 </body>
 </html>

@@ -6,89 +6,309 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     color: #fff;
+    overflow: hidden;
 }
 
 .game-container {
     text-align: center;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 95vw;
 }
 
-h1 {
-    margin-bottom: 20px;
-    font-size: 2.5em;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-#gameCanvas {
-    background: #000;
-    border: 3px solid #fff;
+/* 상단 UI */
+.top-ui {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.3);
     border-radius: 10px;
-    display: block;
-    margin: 0 auto 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-}
-
-.controls {
-    margin: 20px 0;
-}
-
-.controls button {
-    margin: 0 10px;
-    padding: 12px 25px;
-    font-size: 16px;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: bold;
-}
-
-.controls button:hover {
-    background: #45a049;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.controls button:active {
-    transform: translateY(0);
-}
-
-#pauseBtn {
-    background: #ff9800;
-}
-
-#pauseBtn:hover {
-    background: #e68900;
-}
-
-#resetBtn {
-    background: #f44336;
-}
-
-#resetBtn:hover {
-    background: #da190b;
 }
 
 .score {
-    margin-top: 20px;
     font-size: 1.5em;
     font-weight: bold;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 #scoreValue {
+    color: #00ff00;
+}
+
+.settings-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.settings-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+/* 캔버스 */
+#gameCanvas {
+    display: block;
+    margin: 0 auto 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+/* 컨트롤 버튼 */
+.controls {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.btn-start {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+}
+
+.btn-pause {
+    background: linear-gradient(135deg, #ff9800, #e68900);
+    color: white;
+}
+
+.btn-reset {
+    background: linear-gradient(135deg, #f44336, #da190b);
+    color: white;
+}
+
+/* 모달 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
     color: #ffd700;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    font-size: 1.8em;
+}
+
+.modal-content h3 {
+    margin: 20px 0 15px;
+    color: #00d4ff;
+    font-size: 1.3em;
+    border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+    padding-bottom: 5px;
+}
+
+.settings-section {
+    margin-bottom: 20px;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.setting-item label {
+    flex: 1;
+    text-align: left;
+    margin-right: 15px;
+    font-size: 0.95em;
+}
+
+.setting-item input {
+    width: 120px;
+    padding: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-size: 1em;
+}
+
+.setting-item input:focus {
+    outline: none;
+    border-color: #00d4ff;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.btn-apply {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    flex: 1;
+}
+
+.btn-cancel {
+    background: linear-gradient(135deg, #666, #555);
+    color: white;
+    flex: 1;
+}
+
+.btn-default {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    color: white;
+    flex: 1;
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+    .game-container {
+        padding: 10px;
+    }
+
+    .top-ui {
+        padding: 8px 10px;
+    }
+
+    .score {
+        font-size: 1.2em;
+    }
+
+    .settings-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2em;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+
+    .modal-content {
+        padding: 20px;
+        width: 95%;
+    }
+
+    .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .setting-item label {
+        margin-bottom: 8px;
+    }
+
+    .setting-item input {
+        width: 100%;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+    }
+}
+
+/* 스크롤바 스타일 */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
