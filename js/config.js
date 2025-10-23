@@ -8,18 +8,18 @@ const CONFIG = {
 
   // 플레이어 설정
   PLAYER: {
-    WIDTH: 40,
-    HEIGHT: 40,
-    SPEED: 300,           // px/s
-    JUMP_FORCE: 500,      // px
+    WIDTH: 80,
+    HEIGHT: 80,
+    SPEED: 500,           // px/s
+    JUMP_FORCE: 800,      // px
     GRAVITY: 1500,        // px/s²
-    MAX_JUMPS: 2,         // 최대 점프 횟수
+    MAX_JUMPS: -1,        // 최대 점프 횟수 (-1: 무제한)
     COLOR: '#00ff00'
   },
 
   // 별 설정
   STAR: {
-    SIZE: 30,
+    SIZE: 90,
     COLOR: '#ffff00',
     GLOW_COLOR: '#ffff00'
   },
