@@ -36,18 +36,42 @@ function resizeCanvas() {
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
 
+  // 실제 DOM 요소 높이 계산
+  const topUI = document.querySelector('.top-ui');
+  const controls = document.querySelector('.controls');
+  const gameContainer = document.querySelector('.game-container');
+
+  // UI 요소들의 실제 높이
+  const topUIHeight = topUI ? topUI.offsetHeight : 0;
+  const controlsHeight = controls ? controls.offsetHeight : 0;
+
+  // 컨테이너 패딩 (CSS에서 20px * 2)
+  const containerStyle = gameContainer ? window.getComputedStyle(gameContainer) : null;
+  const containerPaddingTop = containerStyle ? parseInt(containerStyle.paddingTop) : 20;
+  const containerPaddingBottom = containerStyle ? parseInt(containerStyle.paddingBottom) : 20;
+
+  // 캔버스와 다른 요소 사이의 마진 (여유 공간)
+  const margins = 40;
+
+  // 사용할 수 없는 공간 총합
+  const reservedSpace = topUIHeight + controlsHeight + containerPaddingTop + containerPaddingBottom + margins;
+
+  // 사용 가능한 공간 계산
+  const availableWidth = windowWidth * 0.95;
+  const availableHeight = windowHeight - reservedSpace;
+
   // 게임 박스 비율 계산
   const aspectRatio = gameBox.width / gameBox.height;
   const windowRatio = windowWidth / windowHeight;
 
-  // 화면에 맞게 스케일 조정
+  // 화면에 맞게 스케일 조정 (박스 비율 유지)
   if (windowRatio > aspectRatio) {
-    // 세로가 기준
-    canvas.height = Math.min(windowHeight * 0.9, gameBox.height);
+    // 세로가 제약 조건
+    canvas.height = Math.min(Math.max(availableHeight, 300), gameBox.height);
     canvas.width = canvas.height * aspectRatio;
   } else {
-    // 가로가 기준
-    canvas.width = Math.min(windowWidth * 0.9, gameBox.width);
+    // 가로가 제약 조건
+    canvas.width = Math.min(Math.max(availableWidth, 300), gameBox.width);
     canvas.height = canvas.width / aspectRatio;
   }
 
@@ -221,14 +245,22 @@ function renderReadyScreen() {
   ctx.save();
   ctx.scale(scale, scale);
 
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '40px Arial';
+  ctx.fillStyle = '#ffd700';
+  ctx.font = 'bold 40px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText('Star Dodge', gameBox.width / 2, gameBox.height / 2 - 50);
+  ctx.fillText('Star Dodge', gameBox.width / 2, gameBox.height / 2 - 60);
 
-  ctx.font = '20px Arial';
-  ctx.fillText('스페이스바 또는 화면 터치로 점프', gameBox.width / 2, gameBox.height / 2);
-  ctx.fillText('게임 시작 버튼을 눌러주세요', gameBox.width / 2, gameBox.height / 2 + 40);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '22px Arial';
+  ctx.fillText('스페이스바, 클릭, 터치로', gameBox.width / 2, gameBox.height / 2 - 10);
+
+  ctx.fillStyle = '#00ff00';
+  ctx.font = 'bold 24px Arial';
+  ctx.fillText('게임 시작!', gameBox.width / 2, gameBox.height / 2 + 25);
+
+  ctx.fillStyle = '#aaaaaa';
+  ctx.font = '16px Arial';
+  ctx.fillText('또는 하단 버튼을 클릭하세요', gameBox.width / 2, gameBox.height / 2 + 60);
 
   ctx.restore();
 }
@@ -246,14 +278,19 @@ function renderGameOverScreen() {
   ctx.fillStyle = '#ff4444';
   ctx.font = 'bold 50px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText('GAME OVER', gameBox.width / 2, gameBox.height / 2 - 50);
+  ctx.fillText('GAME OVER', gameBox.width / 2, gameBox.height / 2 - 60);
+
+  ctx.fillStyle = '#ffd700';
+  ctx.font = 'bold 30px Arial';
+  ctx.fillText(`점수: ${gameState.score}`, gameBox.width / 2, gameBox.height / 2 + 10);
 
   ctx.fillStyle = '#ffffff';
-  ctx.font = '30px Arial';
-  ctx.fillText(`점수: ${gameState.score}`, gameBox.width / 2, gameBox.height / 2 + 20);
+  ctx.font = '22px Arial';
+  ctx.fillText('스페이스바, 클릭, 터치로 재시작', gameBox.width / 2, gameBox.height / 2 + 55);
 
-  ctx.font = '20px Arial';
-  ctx.fillText('재시작 버튼을 눌러주세요', gameBox.width / 2, gameBox.height / 2 + 70);
+  ctx.fillStyle = '#aaaaaa';
+  ctx.font = '16px Arial';
+  ctx.fillText('또는 하단 버튼을 클릭하세요', gameBox.width / 2, gameBox.height / 2 + 85);
 
   ctx.restore();
 }
@@ -282,6 +319,21 @@ function gameLoop() {
 function handleInput() {
   if (inputPressed) return;
 
+  // READY 상태에서 게임 시작
+  if (gameState.current === CONFIG.STATE.READY) {
+    startGame();
+    inputPressed = true;
+    return;
+  }
+
+  // GAMEOVER 상태에서 재시작
+  if (gameState.current === CONFIG.STATE.GAMEOVER) {
+    startGame();
+    inputPressed = true;
+    return;
+  }
+
+  // PLAYING 상태에서 점프
   if (gameState.current === CONFIG.STATE.PLAYING) {
     player.jump();
     inputPressed = true;
