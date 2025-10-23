@@ -51,11 +51,19 @@ const CONFIG = {
 // 런타임 설정 (게임 중 수정 가능)
 const RUNTIME_CONFIG = {
   player: {
+    width: CONFIG.PLAYER.WIDTH,
+    height: CONFIG.PLAYER.HEIGHT,
     speed: CONFIG.PLAYER.SPEED,
     jumpForce: CONFIG.PLAYER.JUMP_FORCE,
-    gravity: CONFIG.PLAYER.GRAVITY
+    gravity: CONFIG.PLAYER.GRAVITY,
+    maxJumps: CONFIG.PLAYER.MAX_JUMPS  // -1 = 무제한 공중 점프
+  },
+  star: {
+    size: CONFIG.STAR.SIZE
   },
   meteor: {
+    width: CONFIG.METEOR.WIDTH,
+    height: CONFIG.METEOR.HEIGHT,
     minSpeed: CONFIG.METEOR.MIN_SPEED,
     maxSpeed: CONFIG.METEOR.MAX_SPEED,
     spawnInterval: {

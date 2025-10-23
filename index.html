@@ -35,6 +35,18 @@
             <div class="settings-section">
                 <h3>플레이어 설정</h3>
                 <div class="setting-item">
+                    <label for="playerWidth">너비 (px):</label>
+                    <input type="number" id="playerWidth" min="20" max="100" step="5">
+                </div>
+                <div class="setting-item">
+                    <label for="playerHeight">높이 (px):</label>
+                    <input type="number" id="playerHeight" min="20" max="100" step="5">
+                </div>
+                <div class="setting-item">
+                    <label for="playerMaxJumps">최대 점프 횟수 (-1: 무제한):</label>
+                    <input type="number" id="playerMaxJumps" min="-1" max="10" step="1">
+                </div>
+                <div class="setting-item">
                     <label for="playerSpeed">이동 속도 (px/s):</label>
                     <input type="number" id="playerSpeed" min="100" max="1000" step="50">
                 </div>
@@ -49,7 +61,23 @@
             </div>
 
             <div class="settings-section">
+                <h3>별 설정</h3>
+                <div class="setting-item">
+                    <label for="starSize">크기 (px):</label>
+                    <input type="number" id="starSize" min="15" max="60" step="5">
+                </div>
+            </div>
+
+            <div class="settings-section">
                 <h3>메테오 설정</h3>
+                <div class="setting-item">
+                    <label for="meteorWidth">너비 (px):</label>
+                    <input type="number" id="meteorWidth" min="20" max="100" step="5">
+                </div>
+                <div class="setting-item">
+                    <label for="meteorHeight">높이 (px):</label>
+                    <input type="number" id="meteorHeight" min="20" max="100" step="5">
+                </div>
                 <div class="setting-item">
                     <label for="meteorMinSpeed">최소 속도 (px/s):</label>
                     <input type="number" id="meteorMinSpeed" min="50" max="500" step="50">

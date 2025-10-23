@@ -1,12 +1,15 @@
 // 플레이어 클래스
 class Player {
   constructor(x, y, boxWidth, boxHeight) {
-    this.x = x;
-    this.y = y;
-    this.width = CONFIG.PLAYER.WIDTH;
-    this.height = CONFIG.PLAYER.HEIGHT;
     this.boxWidth = boxWidth;
     this.boxHeight = boxHeight;
+
+    // 크기 초기화
+    this.updateSize();
+
+    // 위치 설정
+    this.x = x;
+    this.y = y;
 
     // 이동 관련
     this.velocityX = RUNTIME_CONFIG.player.speed;
@@ -19,6 +22,14 @@ class Player {
 
     // 렌더링
     this.color = CONFIG.PLAYER.COLOR;
+  }
+
+  /**
+   * 크기 업데이트 (설정 변경 시 호출)
+   */
+  updateSize() {
+    this.width = RUNTIME_CONFIG.player.width;
+    this.height = RUNTIME_CONFIG.player.height;
   }
 
   /**
@@ -65,7 +76,17 @@ class Player {
    * 점프 실행
    */
   jump() {
-    if (this.jumpCount < CONFIG.PLAYER.MAX_JUMPS) {
+    const maxJumps = RUNTIME_CONFIG.player.maxJumps;
+
+    // -1이면 무제한 공중 점프
+    if (maxJumps === -1) {
+      this.velocityY = -RUNTIME_CONFIG.player.jumpForce;
+      this.jumpCount++;
+      return;
+    }
+
+    // 일반 점프 제한
+    if (this.jumpCount < maxJumps) {
       this.velocityY = -RUNTIME_CONFIG.player.jumpForce;
       this.jumpCount++;
     }

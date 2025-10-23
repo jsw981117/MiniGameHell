@@ -1,13 +1,22 @@
 // 메테오 클래스
 class Meteor {
   constructor() {
-    this.width = CONFIG.METEOR.WIDTH;
-    this.height = CONFIG.METEOR.HEIGHT;
     this.color = CONFIG.METEOR.COLOR;
     this.active = false;
     this.x = 0;
     this.y = 0;
     this.speed = 0;
+
+    // 크기 초기화
+    this.updateSize();
+  }
+
+  /**
+   * 크기 업데이트 (설정 변경 시 호출)
+   */
+  updateSize() {
+    this.width = RUNTIME_CONFIG.meteor.width;
+    this.height = RUNTIME_CONFIG.meteor.height;
   }
 
   /**
@@ -144,6 +153,15 @@ class MeteorPool {
   reset() {
     for (let i = 0; i < this.pool.length; i++) {
       this.pool[i].deactivate();
+    }
+  }
+
+  /**
+   * 모든 메테오 크기 일괄 업데이트
+   */
+  updateAllSizes() {
+    for (let i = 0; i < this.pool.length; i++) {
+      this.pool[i].updateSize();
     }
   }
 }

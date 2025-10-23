@@ -3,11 +3,11 @@ class Star {
   constructor(boxWidth, boxHeight) {
     this.boxWidth = boxWidth;
     this.boxHeight = boxHeight;
-    this.size = CONFIG.STAR.SIZE;
-    this.width = this.size;
-    this.height = this.size;
     this.color = CONFIG.STAR.COLOR;
     this.glowColor = CONFIG.STAR.GLOW_COLOR;
+
+    // 크기 초기화
+    this.updateSize();
 
     // 애니메이션
     this.time = 0;
@@ -17,14 +17,23 @@ class Star {
   }
 
   /**
+   * 크기 업데이트 (설정 변경 시 호출)
+   */
+  updateSize() {
+    this.size = RUNTIME_CONFIG.star.size;
+    this.width = this.size;
+    this.height = this.size;
+  }
+
+  /**
    * 랜덤 위치에 별 생성
    */
   spawn() {
     const pos = randomPosition(
       this.boxWidth,
       this.boxHeight,
-      this.size,
-      this.size
+      this.width,
+      this.height
     );
     this.x = pos.x;
     this.y = pos.y;

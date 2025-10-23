@@ -8,9 +8,18 @@
 
   // 입력 필드
   const inputs = {
+    // 플레이어
+    playerWidth: document.getElementById('playerWidth'),
+    playerHeight: document.getElementById('playerHeight'),
+    playerMaxJumps: document.getElementById('playerMaxJumps'),
     playerSpeed: document.getElementById('playerSpeed'),
     playerJumpForce: document.getElementById('playerJumpForce'),
     playerGravity: document.getElementById('playerGravity'),
+    // 별
+    starSize: document.getElementById('starSize'),
+    // 메테오
+    meteorWidth: document.getElementById('meteorWidth'),
+    meteorHeight: document.getElementById('meteorHeight'),
     meteorMinSpeed: document.getElementById('meteorMinSpeed'),
     meteorMaxSpeed: document.getElementById('meteorMaxSpeed'),
     meteorInitialInterval: document.getElementById('meteorInitialInterval'),
@@ -22,9 +31,18 @@
    * 설정 값을 입력 필드에 로드
    */
   function loadSettings() {
+    // 플레이어
+    inputs.playerWidth.value = RUNTIME_CONFIG.player.width;
+    inputs.playerHeight.value = RUNTIME_CONFIG.player.height;
+    inputs.playerMaxJumps.value = RUNTIME_CONFIG.player.maxJumps;
     inputs.playerSpeed.value = RUNTIME_CONFIG.player.speed;
     inputs.playerJumpForce.value = RUNTIME_CONFIG.player.jumpForce;
     inputs.playerGravity.value = RUNTIME_CONFIG.player.gravity;
+    // 별
+    inputs.starSize.value = RUNTIME_CONFIG.star.size;
+    // 메테오
+    inputs.meteorWidth.value = RUNTIME_CONFIG.meteor.width;
+    inputs.meteorHeight.value = RUNTIME_CONFIG.meteor.height;
     inputs.meteorMinSpeed.value = RUNTIME_CONFIG.meteor.minSpeed;
     inputs.meteorMaxSpeed.value = RUNTIME_CONFIG.meteor.maxSpeed;
     inputs.meteorInitialInterval.value = RUNTIME_CONFIG.meteor.spawnInterval.initial;
@@ -36,28 +54,56 @@
    * 입력 필드 값을 설정에 적용
    */
   function applySettings() {
+    // 플레이어
+    RUNTIME_CONFIG.player.width = parseInt(inputs.playerWidth.value);
+    RUNTIME_CONFIG.player.height = parseInt(inputs.playerHeight.value);
+    RUNTIME_CONFIG.player.maxJumps = parseInt(inputs.playerMaxJumps.value);
     RUNTIME_CONFIG.player.speed = parseFloat(inputs.playerSpeed.value);
     RUNTIME_CONFIG.player.jumpForce = parseFloat(inputs.playerJumpForce.value);
     RUNTIME_CONFIG.player.gravity = parseFloat(inputs.playerGravity.value);
+    // 별
+    RUNTIME_CONFIG.star.size = parseInt(inputs.starSize.value);
+    // 메테오
+    RUNTIME_CONFIG.meteor.width = parseInt(inputs.meteorWidth.value);
+    RUNTIME_CONFIG.meteor.height = parseInt(inputs.meteorHeight.value);
     RUNTIME_CONFIG.meteor.minSpeed = parseFloat(inputs.meteorMinSpeed.value);
     RUNTIME_CONFIG.meteor.maxSpeed = parseFloat(inputs.meteorMaxSpeed.value);
     RUNTIME_CONFIG.meteor.spawnInterval.initial = parseFloat(inputs.meteorInitialInterval.value);
     RUNTIME_CONFIG.meteor.spawnInterval.minimum = parseFloat(inputs.meteorMinInterval.value);
     RUNTIME_CONFIG.meteor.spawnInterval.decreaseRate = parseFloat(inputs.meteorDecreaseRate.value);
+
+    // 게임 오브젝트 크기 업데이트
+    if (typeof player !== 'undefined' && player) player.updateSize();
+    if (typeof star !== 'undefined' && star) star.updateSize();
+    if (typeof meteorPool !== 'undefined' && meteorPool) meteorPool.updateAllSizes();
   }
 
   /**
    * 기본값으로 복원
    */
   function resetToDefaults() {
+    // 플레이어
+    RUNTIME_CONFIG.player.width = CONFIG.PLAYER.WIDTH;
+    RUNTIME_CONFIG.player.height = CONFIG.PLAYER.HEIGHT;
+    RUNTIME_CONFIG.player.maxJumps = CONFIG.PLAYER.MAX_JUMPS;
     RUNTIME_CONFIG.player.speed = CONFIG.PLAYER.SPEED;
     RUNTIME_CONFIG.player.jumpForce = CONFIG.PLAYER.JUMP_FORCE;
     RUNTIME_CONFIG.player.gravity = CONFIG.PLAYER.GRAVITY;
+    // 별
+    RUNTIME_CONFIG.star.size = CONFIG.STAR.SIZE;
+    // 메테오
+    RUNTIME_CONFIG.meteor.width = CONFIG.METEOR.WIDTH;
+    RUNTIME_CONFIG.meteor.height = CONFIG.METEOR.HEIGHT;
     RUNTIME_CONFIG.meteor.minSpeed = CONFIG.METEOR.MIN_SPEED;
     RUNTIME_CONFIG.meteor.maxSpeed = CONFIG.METEOR.MAX_SPEED;
     RUNTIME_CONFIG.meteor.spawnInterval.initial = CONFIG.METEOR.SPAWN_INTERVAL.INITIAL;
     RUNTIME_CONFIG.meteor.spawnInterval.minimum = CONFIG.METEOR.SPAWN_INTERVAL.MINIMUM;
     RUNTIME_CONFIG.meteor.spawnInterval.decreaseRate = CONFIG.METEOR.SPAWN_INTERVAL.DECREASE_RATE;
+
+    // 게임 오브젝트 크기 업데이트
+    if (typeof player !== 'undefined' && player) player.updateSize();
+    if (typeof star !== 'undefined' && star) star.updateSize();
+    if (typeof meteorPool !== 'undefined' && meteorPool) meteorPool.updateAllSizes();
 
     loadSettings();
   }
